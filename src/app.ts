@@ -1,12 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import logger from "./config/logger";
-import createError, { HttpError } from "http-errors";
+import { HttpError } from "http-errors";
 
 const app = express();
 
 app.get("/", (req, res) => {
-    const err = createError(401, "manthan not allowed to view this page");
-    throw err;
     res.json({ msg: "done" });
 });
 
