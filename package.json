@@ -1,18 +1,24 @@
 {
-  "name": "authservice",
-  "version": "1.0.0",
-  "description": "user managment service",
-  "main": "index.js",
-  "scripts": {
-    "dev": "node src/server.js",
-    "format:check": "npx prettier . --check",
-    "format:fix": "npx prettier . --write"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/node": "^20.8.2",
-    "prettier": "3.0.3",
-    "typescript": "^5.2.2"
-  }
+    "name": "authservice",
+    "version": "1.0.0",
+    "description": "user managment service",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node src/server.js",
+        "format:check": "npx prettier . --check",
+        "format:fix": "npx prettier . --write",
+        "lint": "npx eslint .",
+        "lint:fix": "npx eslint . --fix"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/node": "^20.8.2",
+        "@typescript-eslint/eslint-plugin": "^6.7.4",
+        "@typescript-eslint/parser": "^6.7.4",
+        "eslint": "^8.50.0",
+        "eslint-config-prettier": "^9.0.0",
+        "prettier": "3.0.3",
+        "typescript": "^5.2.2"
+    }
 }
