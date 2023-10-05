@@ -1,0 +1,11 @@
+#command to start container
+
+docker run --rm -it -v $(pwd):/usr/src/app -v /usr/src/app/node_modules --env-file $(pwd)/.env -p 5600:5500 -e NODE_ENV=development --name auth-service-container auth-service:dev
+
+
+#start pg container 
+
+docker run --rm --name mernpg-container -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -v mernpgdata:/var/lib/postgresql/data -p 5432:5432 -d postgres
+
+docker exec -it mernpg-container psql -U root
+
