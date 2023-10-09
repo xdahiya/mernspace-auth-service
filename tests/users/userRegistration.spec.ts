@@ -102,6 +102,40 @@ describe("POST /auth/register", () => {
             expect(users[0]).toHaveProperty("role");
             expect(users[0].role).toBe(Roles.CUSTOMER);
         });
+
+        it("it should hash password ", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+            };
+            await request(app).post("/auth/register").send(user);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+            expect(users[0].password).not.toBe(user.password);
+            expect(users[0].password).toHaveLength(60);
+            expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+        });
+
+        it("it should return error code 400 if email already exists ", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+            };
+
+            const userRepo = connection.getRepository(User);
+
+            await userRepo.save({ ...user, role: Roles.CUSTOMER });
+            const res = await request(app).post("/auth/register").send(user);
+            const users = await userRepo.find();
+
+            expect(res.statusCode).toBe(400);
+            expect(users).toHaveLength(1);
+        });
     });
 
     // describe("NOT GIVEN ALL FIELDS",()=>{
