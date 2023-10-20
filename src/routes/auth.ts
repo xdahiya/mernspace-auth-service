@@ -5,13 +5,16 @@ import { AppDataSource } from "../config/data-source";
 import { User } from "../entity/User";
 import logger from "../config/logger";
 import registerValidator from "../validators/register-validator";
+import { TokenService } from "../services/TokenService";
+import { RefreshToken } from "../entity/RefreshToken";
 
 const router = express.Router();
 
 const userRepo = AppDataSource.getRepository(User);
 const userService = new UserService(userRepo);
-
-const authController = new AuthController(userService, logger);
+const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
+const tokenService = new TokenService(refreshTokenRepo);
+const authController = new AuthController(userService, tokenService, logger);
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 router.post(
