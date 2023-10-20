@@ -4,6 +4,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
+import { isJwt } from "../utils";
 // import { truncateTables } from "../utils";
 
 describe("POST /auth/register", () => {
@@ -130,6 +131,40 @@ describe("POST /auth/register", () => {
             expect(res.statusCode).toBe(400);
             expect(users).toHaveLength(1);
         });
+
+        it("it should return access token and refresh token cookies ", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            interface Headers {
+                ["set-cookie"]: string[];
+            }
+
+            let accessToken = null;
+            let refreshToken = null;
+            const cookies = (response.headers as Headers)["set-cookie"] || [];
+
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith("accessToken")) {
+                    accessToken = cookie.split(";")[0].split("=")[1];
+                }
+                if (cookie.startsWith("refreshToken")) {
+                    refreshToken = cookie.split(";")[0].split("=")[1];
+                }
+            });
+
+            expect(accessToken).not.toBeNull();
+            expect(refreshToken).not.toBeNull();
+            expect(isJwt(accessToken)).toBeTruthy();
+            expect(isJwt(refreshToken)).toBeTruthy();
+        });
     });
 
     describe("NOT GIVEN ALL FIELDS", () => {
@@ -144,11 +179,126 @@ describe("POST /auth/register", () => {
                 .post("/auth/register")
                 .send(user);
 
+            expect(response.body).toHaveProperty("errors");
+
+            expect((response.body as { errors: [] }).errors).toBeInstanceOf(
+                Array,
+            );
+
             expect(response.statusCode).toBe(400);
 
             const userRepo = connection.getRepository(User);
             const users = await userRepo.find();
 
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 if firstname not provided", async () => {
+            const user = {
+                firstName: "",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 if lastname not provided", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "",
+                email: "user1@gmail.com",
+                password: "User1@123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 if password not provided", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+
+            expect(users).toHaveLength(0);
+        });
+    });
+
+    describe("FIELDS ARE INPROPER FORMAT", () => {
+        it("email should not contain whitespace", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: " user1@gmail.com ",
+                password: "User1@123",
+            };
+            await request(app).post("/auth/register").send(user);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+            const user0 = users[0];
+
+            expect(user0.email).toBe("user1@gmail.com");
+        });
+
+        it("should return 400 if email is not valid", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1gmail.com",
+                password: "User1@123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+            expect(users).toHaveLength(0);
+        });
+
+        it("should return 400 if password length less than 8 chars", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
             expect(users).toHaveLength(0);
         });
     });
