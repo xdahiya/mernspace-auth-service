@@ -37,7 +37,7 @@ describe("POST /auth/register", () => {
             expect(response.statusCode).toBe(201);
         });
 
-        it("content type shoul be json", async () => {
+        it("content type should be json", async () => {
             const user = {
                 firstName: "user",
                 lastName: "1",
@@ -80,11 +80,6 @@ describe("POST /auth/register", () => {
             const res: { body: { id: number } } = await request(app)
                 .post("/auth/register")
                 .send(user);
-            // console.log("RESPONSE IS :", res.body);
-
-            // const userRepo = connection.getRepository(User);
-            // const users = await userRepo.find();
-            // expect(users).toHaveLength(1);
             expect(res.body.id);
         });
 
@@ -126,10 +121,9 @@ describe("POST /auth/register", () => {
                 email: "user1@gmail.com",
                 password: "User1@123",
             };
-
             const userRepo = connection.getRepository(User);
-
             await userRepo.save({ ...user, role: Roles.CUSTOMER });
+
             const res = await request(app).post("/auth/register").send(user);
             const users = await userRepo.find();
 
@@ -138,16 +132,24 @@ describe("POST /auth/register", () => {
         });
     });
 
-    // describe("NOT GIVEN ALL FIELDS",()=>{
-    //     it("should return 201", async () => {
-    //         const user = {
-    //             firstName:"user",
-    //             lastName:"1",
-    //             email:"user1@gmail.com",
-    //             passwor:"User1@123"
-    //         }
-    //         const response = await request(app).post("/auth/register").send(user);
-    //         expect(response.statusCode).toBe(201);
-    //     });
-    // })
+    describe("NOT GIVEN ALL FIELDS", () => {
+        it("should return 400 if email not provided", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "",
+                password: "User1@123",
+            };
+            const response = await request(app)
+                .post("/auth/register")
+                .send(user);
+
+            expect(response.statusCode).toBe(400);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+
+            expect(users).toHaveLength(0);
+        });
+    });
 });
