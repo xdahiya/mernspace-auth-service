@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 
 export class UserService {
     constructor(private userRepo: Repository<User>) {}
+
     async create({ firstName, lastName, email, password }: UserData) {
         const user = await this.userRepo.findOne({ where: { email: email } });
         if (user) {
@@ -26,5 +27,13 @@ export class UserService {
             const err = createHttpError(500, "failed to create user");
             throw err;
         }
+    }
+
+    async findByEmail(email: string) {
+        return await this.userRepo.findOne({
+            where: {
+                email,
+            },
+        });
     }
 }

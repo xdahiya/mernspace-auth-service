@@ -6,7 +6,6 @@ import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { isJwt } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
-// import { truncateTables } from "../utils";
 
 describe("POST /auth/register", () => {
     let connection: DataSource;
@@ -16,7 +15,6 @@ describe("POST /auth/register", () => {
     });
 
     beforeEach(async () => {
-        // await truncateTables(connection);
         await connection.dropDatabase();
         await connection.synchronize();
     });
