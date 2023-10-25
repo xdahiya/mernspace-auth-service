@@ -101,6 +101,25 @@ describe("GET /auth/self", () => {
                 "password",
             );
         });
+
+        it("should return 401 if no token send", async () => {
+            const userreg = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@124",
+            };
+
+            const userRepo = connection.getRepository(User);
+            await userRepo.save({
+                ...userreg,
+                role: Roles.CUSTOMER,
+            });
+
+            const response = await request(app).get("/auth/self").send();
+
+            expect(response.statusCode).toBe(401);
+        });
     });
 
     describe.skip("NOT GIVEN ALL FIELDS", () => {
