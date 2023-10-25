@@ -13,6 +13,7 @@ const {
     DB_PORT,
     DB_NAME,
     REFRESH_TOKEN_SECRET,
+    JWKS_URI,
 } = process.env;
 export const Config = {
     PORT,
@@ -23,4 +24,5 @@ export const Config = {
     DB_PORT,
     DB_NAME,
     REFRESH_TOKEN_SECRET,
+    JWKS_URI,
 };

@@ -22,3 +22,10 @@ export interface LoginUserRequest extends Request {
 //     sub:string,
 //     role:string
 // }
+
+export interface AuthRequest extends Request {
+    auth: {
+        sub: string;
+        role: string;
+    };
+}

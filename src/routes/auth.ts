@@ -9,6 +9,8 @@ import loginValidator from "../validators/login-validator";
 import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
 import { CredentialsService } from "../services/CredentialsService";
+import authenticate from "../middlewares/authenticate";
+import { AuthRequest } from "../types";
 
 const router = express.Router();
 
@@ -42,6 +44,16 @@ router.post(
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     (req: Request, res: Response, next: NextFunction) =>
         authController.login(req, res, next),
+);
+
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+router.get(
+    "/self",
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    authenticate,
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    (req: Request, res: Response) =>
+        authController.self(req as AuthRequest, res),
 );
 
 export default router;
