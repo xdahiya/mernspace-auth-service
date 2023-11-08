@@ -10,6 +10,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
 import createHttpError from "http-errors";
 import { CredentialsService } from "../services/CredentialsService";
+import { Roles } from "../constants";
 
 export class AuthController {
     constructor(
@@ -43,6 +44,7 @@ export class AuthController {
                 lastName,
                 email,
                 password,
+                role: Roles.CUSTOMER,
             });
 
             this.logger.info("user has been registered ", { id: user.id });

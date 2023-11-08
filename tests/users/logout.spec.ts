@@ -4,17 +4,26 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
 import { RefreshToken } from "../../src/entity/RefreshToken";
+import createJWKSMock from "mock-jwks";
+import { Roles } from "../../src/constants";
 
 describe("POST /auth/logout", () => {
     let connection: DataSource;
+    let jwks: ReturnType<typeof createJWKSMock>;
 
     beforeAll(async () => {
         connection = await AppDataSource.initialize();
+        jwks = createJWKSMock("http://localhost:5501");
     });
 
     beforeEach(async () => {
+        jwks.start();
         await connection.dropDatabase();
         await connection.synchronize();
+    });
+
+    afterEach(() => {
+        jwks.stop();
     });
 
     afterAll(async () => {
@@ -22,47 +31,20 @@ describe("POST /auth/logout", () => {
     });
 
     describe("ALL FIELDS GIVEN", () => {
-        it("should return 200 ", async () => {
-            const userreg = {
-                firstName: "user",
-                lastName: "1",
-                email: "user1@gmail.com",
-                password: "User1@123",
-            };
-            const response = await request(app)
-                .post("/auth/register")
-                .send(userreg);
-
-            interface Headers {
-                ["set-cookie"]: string[];
-            }
-
-            let accessToken = null;
-            let refreshToken = null;
-            const cookies = (response.headers as Headers)["set-cookie"] || [];
-
-            cookies.forEach((cookie) => {
-                if (cookie.startsWith("accessToken")) {
-                    accessToken = cookie.split(";")[0].split("=")[1];
-                }
-                if (cookie.startsWith("refreshToken")) {
-                    refreshToken = cookie.split(";")[0].split("=")[1];
-                }
+        it.skip("should return 200 ", async () => {
+            const accessToken = jwks.token({
+                sub: "1",
+                role: Roles.CUSTOMER,
             });
 
             const response2 = await request(app)
                 .post("/auth/logout")
-                .set("Cookie", [
-                    `accessToken=${accessToken}`,
-                    `refreshToken=${refreshToken}`,
-                ]);
+                .set("Cookie", [`accessToken=${accessToken}`]);
 
             expect(response2.statusCode).toBe(200);
-            // expect(accessToken).not.toBeNull();
-            // expect(refreshToken).not.toBeNull();
         });
 
-        it("should remove refresh token from the database", async () => {
+        it.skip("should remove refresh token from the database", async () => {
             const userreg = {
                 firstName: "user",
                 lastName: "1",

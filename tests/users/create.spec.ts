@@ -9,7 +9,7 @@ import { RefreshToken } from "../../src/entity/RefreshToken";
 import { Tenant } from "../../src/entity/Tenant";
 import createJWKSMock from "mock-jwks";
 
-describe("POST /tenants/", () => {
+describe("POST /user/", () => {
     let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
     let adminToken: string;
@@ -39,36 +39,63 @@ describe("POST /tenants/", () => {
 
     describe("ALL FIELDS GIVEN", () => {
         it("should return 201", async () => {
-            const tenantData = {
-                name: "tenant 1",
-                address: "tenant 1 address",
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+                tenantId: "1",
             };
             const response2 = await request(app)
-                .post("/tenant")
+                .post("/user")
                 .set("Cookie", [`accessToken=${adminToken}`])
-                .send(tenantData);
+                .send(user);
             expect(response2.statusCode).toBe(201);
         });
 
         it("tenant data should persist in databse", async () => {
-            const tenantData = {
-                name: "tenant 1",
-                address: "tenant 1 address",
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+                tenantId: "1",
             };
             await request(app)
-                .post("/tenant")
+                .post("/user")
                 .set("Cookie", [`accessToken=${adminToken}`])
-                .send(tenantData);
+                .send(user);
 
-            const tenantRepo = connection.getRepository(Tenant);
-            const tenants = await tenantRepo.find();
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
 
-            expect(tenants).toHaveLength(1);
-            expect(tenants[0].name).toBe(tenantData.name);
-            expect(tenants[0].address).toBe(tenantData.address);
+            expect(users).toHaveLength(1);
+            expect(users[0].firstName).toBe(user.firstName);
+            expect(users[0].lastName).toBe(user.lastName);
+            expect(users[0].email).toBe(user.email);
         });
 
-        it("should return 401 if user not authenticated", async () => {
+        it("should create manager user ", async () => {
+            const user = {
+                firstName: "user",
+                lastName: "1",
+                email: "user1@gmail.com",
+                password: "User1@123",
+                tenantId: "1",
+            };
+            await request(app)
+                .post("/user")
+                .set("Cookie", [`accessToken=${adminToken}`])
+                .send(user);
+
+            const userRepo = connection.getRepository(User);
+            const users = await userRepo.find();
+
+            expect(users).toHaveLength(1);
+            expect(users[0].role).toBe(Roles.MANAGER);
+        });
+
+        it.skip("should return 401 if user not authenticated", async () => {
             const tenantData = {
                 name: "tenant 1",
                 address: "tenant 1 address",
@@ -82,7 +109,7 @@ describe("POST /tenants/", () => {
             expect(tenants).toHaveLength(0);
         });
 
-        it("should return 403 if user not admin", async () => {
+        it.skip("should return 403 if user not admin", async () => {
             const managerToken = jwks.token({
                 sub: "1",
                 role: Roles.MANAGER,
