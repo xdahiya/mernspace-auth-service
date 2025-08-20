@@ -23,9 +23,16 @@ jobs:
                   NODE_OPTIONS: "--max-old-space-size=4096"
                   NODE_ENV: "test"
                   DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
+                  CURRENT_BACKEND_DOMAIN: ${{ secrets.CURRENT_BACKEND_DOMAIN }}
                   REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
                   JWKS_URI: ${{ secrets.JWKS_URI }}
-                  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+                  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+                  GITHUB_CLIENT_ID: ${{ secrets.GITH_CLIENT_ID }}
+                  GITHUB_CLIENT_SECRET: ${{ secrets.GITH_CLIENT_SECRET }}
+                  CLIENT_UI_DOMAIN: ${{ secrets.CLIENT_UI_DOMAIN }}
+                  ADMIN_UI_DOMAIN: ${{ secrets.ADMIN_UI_DOMAIN }}
+                  MAIN_DOMAIN: ${{ secrets.MAIN_DOMAIN }}
+                  CURRENT_BACKEND_DOMAIN: ${{ CURRENT_BACKEND_DOMAIN.MAIN_DOMAIN }}
             - name: Build-ts
               run: npm run build
 
