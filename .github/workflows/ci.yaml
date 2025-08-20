@@ -32,6 +32,7 @@ jobs:
                   CLIENT_UI_DOMAIN: ${{ secrets.CLIENT_UI_DOMAIN }}
                   ADMIN_UI_DOMAIN: ${{ secrets.ADMIN_UI_DOMAIN }}
                   MAIN_DOMAIN: ${{ secrets.MAIN_DOMAIN }}
+                  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
             - name: Build-ts
               run: npm run build
 
