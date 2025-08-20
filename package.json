@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "cross-env NODE_ENV=test jest --no-cache --runInBand",
+        "test": "cross-env NODE_ENV=test jest --coverage --no-cache --runInBand",
         "prepare2": "husky",
         "prepare": "prisma generate",
         "test:watch": "cross-env jest --watch --runInBand",
