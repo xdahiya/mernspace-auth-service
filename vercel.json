@@ -1,0 +1,26 @@
+{
+    "version": 2,
+    "public": true,
+    "builds": [
+        {
+            "src": "dist/index.js",
+            "use": "@vercel/node",
+            "config": { "includeFiles": ["dist/**"] }
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/public/(.+\\.[a-z]+)$",
+            "dest": "/public/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "dist/index.js",
+            "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+**/.DS_Store
+.DS_Store
+.DS_Store/
+.vscode/
+.env.dev
+.env.test
+certs/
+
