@@ -15,3 +15,5 @@ docker run --rm -it --env-file $(pwd)/.env -p 5501:5501 -e NODE_ENV=development 
 
 docker run --rm -it -p 5501:5501 -e NODE_ENV=development auth_service:dev
 
+
+lets test
